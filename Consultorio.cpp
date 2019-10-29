@@ -7,7 +7,7 @@
 #define tamCli 200
 #define tamDVD 200
 #define arquivoPacientes "pacientes.dat"
-#define arquivoDVDs "dvd.dat"
+#define arquivoMedico "medico.dat"
 #define arqLista
 typedef struct
 {
@@ -17,6 +17,7 @@ typedef struct
 
 }dt;
 
+//struct paciente, temos que verificar se só esses dados sao suficientes ou se vamos remover algo também
 typedef struct
 {
     int codigo;
@@ -31,20 +32,20 @@ typedef struct
 typedef struct
 {
     int codigo;
-	char titulo[30];
-	char genero[10];
+	char nome[30];
+	char especialidade[20];
     char duracao[10];
     dt data_lanc;
-}dvd;
+}medico;
 
 void cadastraPaciente(void);
-void cadastraDvd(void);
+void cadastraMedico(void);
 void consultaPacientes (void);
 void consultaPacienteNome(void);
 void consultaPacienteCPF(void);
 void consultaDVDs(void);
 void consultaDVDCodigo(void);
-void consultaDVDTitulo(void);
+void consultaMedicoNome(void);
 int main(){
     int op;
 	do {
@@ -52,13 +53,13 @@ int main(){
 		printf("\t   Escolha uma das opcoes      \n");
 		printf("\t-------------------------------\n");
 		printf("\n\t1- Cadastrar Pacientes\n");
-		printf("\n\t2- Cadastrar DVDs\n");
+		printf("\n\t2- Cadastrar Medicos\n");
 		printf("\n\t3- Mostrar todos os Pacientes Cadastrados\n");
                 printf("\n\t4- Consultar Pacientes por Nome\n");
 		printf("\n\t5- Consultar Pacientes por CPF\n");
-		printf("\n\t6- Mostrar todos os DVDs Cadastrados\n");
-		printf("\n\t7- Consultar DVDs por Codigos\n");
-		printf("\n\t8- Consultar DVDs por Titulo\n");
+		printf("\n\t6- Mostrar todos os Medicos Cadastrados\n");
+		printf("\n\t7- Consultar Medicos por Codigos\n");
+		printf("\n\t8- Consultar Medicos por Nome\n");
 		printf("\n\t0- Sair do programa\n\n");
 		printf("\tEscola uma Opcao: ");
 		scanf("%d", &op);
@@ -69,7 +70,7 @@ int main(){
 		         break;
 		    case 2:
 					system ("cls");
-					cadastraDvd();
+					cadastraMedico();
 		         break;
 		    case 3:
 					system ("cls");
@@ -93,7 +94,7 @@ int main(){
 		         break;
 		    case 8:
 			        system ("cls");
-					consultaDVDTitulo();
+					consultaMedicoNome();
 		         break;
 		    case 0:
 					system ("cls");
@@ -184,42 +185,42 @@ void cadastraPaciente(void)
 	}while(num==1);
 }
 
-void cadastraDvd(void)
+void cadastraMedico(void)
 {
 	FILE * arq;
-	dvd x;
+	medico x;
 	int num=0;
 	do{
 
 		printf("\n\n\t     Cadastro de novo DVD \n\n");
-		if ((arq = fopen(arquivoDVDs, "ab")) == NULL) {
-			fprintf(stderr, "\n\tImpossivel abrir o arquivo %s!\n", arquivoDVDs);
+		if ((arq = fopen(arquivoMedico, "ab")) == NULL) {
+			fprintf(stderr, "\n\tImpossivel abrir o arquivo %s!\n", arquivoMedico);
 		}
 		fseek(arq, 0, SEEK_END);
 
-		x.codigo = ftell(arq) / sizeof(dvd) + 1;
+		x.codigo = ftell(arq) / sizeof(medico) + 1;
 
 	       system("cls");
-	       printf("Cadastro de DVDs\n\n");
+	       printf("Cadastro de Medicos\n\n");
 
 	       printf("Codigo: %d\n\n", x.codigo);
-	       printf("\nTitulo: ");
+	       printf("\nNome: ");
 	       fflush(stdin);
-		   gets(x.titulo);
-	       printf("\nGenero: ");
-	       gets(x.genero);
+		   gets(x.nome);
+	       printf("\nEspecialidade: ");
+	       gets(x.especialidade);
 	       printf("\nDuracao: ");
 	       gets(x.duracao);
 	 	   printf("\nData do Lancamento (ddmmaaaa): ");
 		   scanf("%02d %02d %4d", &x.data_lanc.dia, &x.data_lanc.mes, &x.data_lanc.ano);
 
-		   fwrite(&x, sizeof(dvd), 1, arq);
+		   fwrite(&x, sizeof(medico), 1, arq);
     	   system("cls");
-		   printf("\n\n\tDVD Cadastrado Com Sucesso!\n\n");
+		   printf("\n\n\tMedico Cadastrado Com Sucesso!\n\n");
 
 		   fclose(arq);
 
-			printf("\n\tDeseja Cadastrar outro DVD ?\n\n\t1- Sim\n\n\t2- Nao\n\n ");
+			printf("\n\tDeseja Cadastrar outro Medico ?\n\n\t1- Sim\n\n\t2- Nao\n\n ");
 			scanf("%d", &num);
 			while(num < 0 || num > 2){
   		  	     system ("cls");
@@ -554,9 +555,9 @@ FILE * arq;
 FILE * arq2;
 int num=0;
 
-dvd c;
+medico c;
 
-	if ((arq = fopen(arquivoDVDs, "rb")) == NULL) {
+	if ((arq = fopen(arquivoMedico, "rb")) == NULL) {
 		fprintf(stderr, "\n\tErro: Nao existe nenhum DVD cadastrado!\n\n\n");
 		printf("\n\n");
         system("pause");
@@ -573,8 +574,8 @@ dvd c;
 	printf(" Cod.: Titulo:                       Genero:    Duracao:    Data Lanc.:  \n");
 	printf("=========================================================================\n\n");
 	printf("-------------------------------------------------------------------------\n");
-	while (fread(&c, sizeof(dvd), 1, arq) > 0) {
-	 printf(" %04d %-30s %-10s %-10s  %02d/%02d/%04d   \n",c.codigo, c.titulo, c.genero, c.duracao, c.data_lanc.dia,c.data_lanc.mes,c.data_lanc.ano);
+	while (fread(&c, sizeof(medico), 1, arq) > 0) {
+	 printf(" %04d %-30s %-10s %-10s  %02d/%02d/%04d   \n",c.codigo, c.nome, c.especialidade, c.duracao, c.data_lanc.dia,c.data_lanc.mes,c.data_lanc.ano);
 	 printf("-------------------------------------------------------------------------\n");
 	}
 	printf("\n=========================================================================\n\n");
@@ -596,8 +597,8 @@ dvd c;
 			fprintf(arq2," Cod.: Titulo:                       Genero:    Duracao:    Data Lanc.:  \n");
 			fprintf(arq2,"=========================================================================\n\n");
 			fprintf(arq2,"-------------------------------------------------------------------------\n");
-			while(fread(&c, sizeof(dvd), 1, arq) > 0) {
-			  fprintf(arq2," %04d %-30s %-10s %-10s  %02d/%02d/%04d   \n",c.codigo, c.titulo,c.genero, c.duracao, c.data_lanc.dia,c.data_lanc.mes,c.data_lanc.ano);
+			while(fread(&c, sizeof(medico), 1, arq) > 0) {
+			  fprintf(arq2," %04d %-30s %-10s %-10s  %02d/%02d/%04d   \n",c.codigo, c.nome,c.especialidade, c.duracao, c.data_lanc.dia,c.data_lanc.mes,c.data_lanc.ano);
 	 		  fprintf(arq2,"-------------------------------------------------------------------------\n");
 	        }
 			 fprintf(arq2,"\n=========================================================================\n\n");
@@ -620,7 +621,7 @@ void consultaDVDCodigo(void){
 
 	FILE * arq;
 	FILE * arq2;
-	dvd c;
+	medico c;
 	int codigo,num=0,num2=0;
 
 	int achei = 0;
@@ -629,7 +630,7 @@ void consultaDVDCodigo(void){
 
 	do{
 
-		if ((arq = fopen(arquivoDVDs, "rb")) == NULL) {
+		if ((arq = fopen(arquivoMedico, "rb")) == NULL) {
 			fprintf(stderr, "\n\tErro: Nao existe nenhum DVD cadastrado!\n");
       		printf("\n\n");
             system("pause");
@@ -656,10 +657,10 @@ void consultaDVDCodigo(void){
 			printf(" Cod.: Titulo:                       Genero:    Duracao:    Data Lanc.:  \n");
 			printf("=========================================================================\n\n");
 			printf("-------------------------------------------------------------------------\n");
-			while(fread(&c, sizeof(dvd), 1, arq) > 0) {
+			while(fread(&c, sizeof(medico), 1, arq) > 0) {
 
 				if( codigo == c.codigo){
-		 			printf(" %04d %-30s %-10s %-10s  %02d/%02d/%04d   \n",c.codigo, c.titulo, c.genero, c.duracao,
+		 			printf(" %04d %-30s %-10s %-10s  %02d/%02d/%04d   \n",c.codigo, c.nome, c.especialidade, c.duracao,
 					  c.data_lanc.dia,c.data_lanc.mes,c.data_lanc.ano);
 					printf("-------------------------------------------------------------------------\n");
 
@@ -695,10 +696,10 @@ void consultaDVDCodigo(void){
 				fprintf(arq2," Cod.: Titulo:                       Genero:    Duracao:    Data Lanc.:  \n");
 				fprintf(arq2,"=========================================================================\n\n");
 				fprintf(arq2,"-------------------------------------------------------------------------\n");
-			    while(fread(&c, sizeof(dvd), 1, arq) > 0)
+			    while(fread(&c, sizeof(medico), 1, arq) > 0)
                 {
 					if( codigo == c.codigo){
-		 			fprintf(arq2," %04d %-30s %-10s %-10s  %02d/%02d/%04d   \n",c.codigo, c.titulo, c.genero, c.duracao,c.data_lanc.dia,c.data_lanc.mes,c.data_lanc.ano);
+		 			fprintf(arq2," %04d %-30s %-10s %-10s  %02d/%02d/%04d   \n",c.codigo, c.nome, c.especialidade, c.duracao,c.data_lanc.dia,c.data_lanc.mes,c.data_lanc.ano);
 					fprintf(arq2,"-------------------------------------------------------------------------\n");
  				    achei = 1;
 	       			}
@@ -723,58 +724,58 @@ void consultaDVDCodigo(void){
     system("cls");
 	}while(num2==1);
 }
-void consultaDVDTitulo(void){
+void consultaMedicoNome(void){
 
 	FILE * arq;
 	FILE * arq2;
-	dvd c;
-	char titulo[30];
+	medico c;
+	char nome[30];
 	int codigo,num=0,num2=0;
 	int achei = 0;
 	int i=0,j=0;
 
 	do{
 
-		if ((arq = fopen(arquivoDVDs, "rb")) == NULL) {
-			fprintf(stderr, "\n\tNao existe nenhum DVD cadastrado!\n");
+		if ((arq = fopen(arquivoMedico, "rb")) == NULL) {
+			fprintf(stderr, "\n\tNao existe nenhum Medico cadastrado!\n");
 			printf("\n\n");
             system("pause");
 			return;
 		}
 
-		if((arq2 = fopen(arqLista"PesquisaDVDTitulo.txt", "w")) == NULL) {
-			fprintf(stderr, "\n\tErro de abertura do arquivo %s!\n", arqLista"PesquisaDVDTitulo.txt");
+		if((arq2 = fopen(arqLista"PesquisaMedicoNome.txt", "w")) == NULL) {
+			fprintf(stderr, "\n\tErro de abertura do arquivo %s!\n", arqLista"PesquisaMedicoNome.txt");
 			printf("\n\n");
             system("pause");
             return;
 		}
 
-		printf("\n\n\t    Consulta de DVDs \n\n");
+		printf("\n\n\t    Consulta de Medicos \n\n");
 	 do{
 
-			printf("\tTitulo do DVD: ");
+			printf("\tNome do Medico: ");
 			fflush(stdin);
-			gets(titulo);
+			gets(nome);
 		    printf("\n\n");
 
 			rewind(arq);
 
 
-				printf("\n\n\t\t\t\tConsulta de DVD por Titulo %s\n\n",titulo);
+				printf("\n\n\t\t\t\tConsulta de Medico por Nome %s\n\n",nome);
 				printf("=========================================================================\n");
-				printf("Cod.: Titulo:                       Genero:    Duracao:    Data Lanc.: \n");
+				printf("Cod.: Nome:                       Genero:    Duracao:    Data Lanc.: \n");
 				printf("=========================================================================\n\n");
 				printf("-------------------------------------------------------------------------\n");
 
-					while(fread(&c, sizeof(dvd), 1, arq) > 0) {
-					  for(i=0;i< (strlen(titulo));i++){
-					  	titulo[i]=toupper(titulo[i]);
-						  for(j=0;j<(strlen(c.titulo));j++){
-					  		c.titulo[j]=toupper(c.titulo[j]);
+					while(fread(&c, sizeof(medico), 1, arq) > 0) {
+					  for(i=0;i< (strlen(nome));i++){
+					  	nome[i]=toupper(nome[i]);
+						  for(j=0;j<(strlen(c.nome));j++){
+					  		c.nome[j]=toupper(c.nome[j]);
 					  	  }
 					  }
-						if(strncmp(titulo,c.titulo, strlen(titulo)) == 0){
-			 			 printf(" %04d %-30s %-10s %-10s  %02d/%02d/%04d  \n",c.codigo, c.titulo, c.genero, c.duracao,c.data_lanc.dia,c.data_lanc.mes,c.data_lanc.ano);
+						if(strncmp(nome,c.nome, strlen(nome)) == 0){
+			 			 printf(" %04d %-30s %-10s %-10s  %02d/%02d/%04d  \n",c.codigo, c.nome, c.especialidade, c.duracao,c.data_lanc.dia,c.data_lanc.mes,c.data_lanc.ano);
         				 printf("-------------------------------------------------------------------------\n");
 					     achei = 1;
 						}
@@ -782,7 +783,7 @@ void consultaDVDTitulo(void){
 				printf("\n=========================================================================\n\n");
 			    if (!achei){
 				  system ("cls");
-				  printf("\n\n\tNao existe DVD cadastrado com esse titulo: %d\n\n",codigo);
+				  printf("\n\n\tNao existe Medico cadastrado com esse nome: %d\n\n",codigo);
 				  printf("\n\tDigite Novamente !\n\n");
 
 				}
@@ -801,25 +802,25 @@ void consultaDVDTitulo(void){
 			}
 			if(num==1)
             {
-					fprintf(arq2,"\n\n\t\t\t\tConsulta DVD por titulo %d\n\n",titulo);
+					fprintf(arq2,"\n\n\t\t\t\tConsulta Medico por nome %d\n\n",nome);
 					fprintf(arq2,"=========================================================================\n");
-					fprintf(arq2,"Cod.: Titulo:                       Genero:    Duracao:    Data Lanc.: \n");
+					fprintf(arq2,"Cod.: Nome:                       Especialidade:    Duracao:    Data Lanc.: \n");
 					fprintf(arq2,"=========================================================================\n\n");
 					fprintf(arq2,"-------------------------------------------------------------------------\n");
 
-					while(fread(&c, sizeof(dvd), 1, arq) > 0)
+					while(fread(&c, sizeof(medico), 1, arq) > 0)
                     {
-					  for(i=0;i< (strlen(titulo));i++)
+					  for(i=0;i< (strlen(nome));i++)
                       {
-					  	titulo[i]=toupper(titulo[i]);
-						  for(j=0;j<(strlen(c.titulo));j++)
+					  	nome[i]=toupper(nome[i]);
+						  for(j=0;j<(strlen(c.nome));j++)
                           {
-					  		c.titulo[j]=toupper(c.titulo[j]);
+					  		c.nome[j]=toupper(c.nome[j]);
 					  	  }
 					  }
-					  if(strncmp(titulo,c.titulo, strlen(titulo)) == 0)
+					  if(strncmp(nome,c.nome, strlen(nome)) == 0)
                       {
-			 			 fprintf(arq2," %04d %-30s %-10s %-10s  %02d/%02d/%04d   \n",c.codigo, c.titulo, c.genero, c.duracao,c.data_lanc.dia,c.data_lanc.mes,c.data_lanc.ano);
+			 			 fprintf(arq2," %04d %-30s %-10s %-10s  %02d/%02d/%04d   \n",c.codigo, c.nome, c.especialidade, c.duracao,c.data_lanc.dia,c.data_lanc.mes,c.data_lanc.ano);
 						 fprintf(arq2,"-------------------------------------------------------------------------\n");
                          achei = 1;
 					  }
