@@ -4,8 +4,6 @@
 #include <conio.h>
 #include <string.h>
 #include <ctype.h>
-#define tamCli 200
-#define tamDVD 200
 #define arquivoPacientes "pacientes.dat"
 #define arquivoMedico "medico.dat"
 #define arqLista
@@ -24,8 +22,6 @@ typedef struct
 	char nome[30];
     char endereco[50];
 	char cpf[15];
-	char nomeContato[30];
-	int telefoneContato;
     int telefone;
 }paciente;
 
@@ -34,8 +30,7 @@ typedef struct
     int codigo;
 	char nome[30];
 	char especialidade[20];
-    char duracao[10];
-    dt data_lanc;
+    int crm;
 }medico;
 
 void cadastraPaciente(void);
@@ -43,8 +38,8 @@ void cadastraMedico(void);
 void consultaPacientes (void);
 void consultaPacienteNome(void);
 void consultaPacienteCPF(void);
-void consultaDVDs(void);
-void consultaDVDCodigo(void);
+void consultaMedicos(void);
+void consultaMedicoCodigo(void);
 void consultaMedicoNome(void);
 int main(){
     int op;
@@ -86,11 +81,11 @@ int main(){
 		         break;
 		    case 6:
 			        system ("cls");
-					consultaDVDs();
+					consultaMedicos();
 		         break;
 		    case 7:
 			        system ("cls");
-					consultaDVDCodigo();
+					consultaMedicoCodigo();
 		         break;
 		    case 8:
 			        system ("cls");
@@ -114,13 +109,13 @@ void cadastraPaciente(void)
 	FILE * arq;
 	paciente x;
     char aux[15];
-    char aux2[15];
     char cpf[15];
     int i=0,j=0;
     int a = 0, num=0;
     do{
+            printf("\n\n\t     Cadastro de Novo Paciente\n\n");
 		do{
-		   printf("\n\n\t     Cadastro de Novo Paciente\n\n");
+
 		   if ((arq = fopen(arquivoPacientes, "a+b")) == NULL) {
 				fprintf(stderr, "\n\tImpossivel abrir o arquivo %s!\n", arquivoPacientes);
 		   }
@@ -129,6 +124,7 @@ void cadastraPaciente(void)
 		   printf("\nCPF: ");
 		   fflush(stdin);
 		   gets(cpf);
+
 		   while(fread(&x, sizeof(paciente), 1, arq) > 0) {
 			if(strncmp(cpf,x.cpf, strlen(cpf)) == 0){
 			  a=a+1;
@@ -142,7 +138,6 @@ void cadastraPaciente(void)
 	        fseek(arq, 0, SEEK_END);
 		x.codigo= ftell(arq) / sizeof(paciente) + 1;
 		printf("\tCodigo do Paciente: %d\n\n", x.codigo);
-		printf("\n\nCPF: %s \n",cpf);
 	        strcpy(x.cpf,cpf);
 
 		printf("\nNome: ");
@@ -157,15 +152,6 @@ void cadastraPaciente(void)
 		fflush(stdin);
 		gets(aux);
 	        x.telefone=atoi(aux);
-
-	    printf("\nNome do Contato: ");
-		fflush(stdin);
-		gets(x.nomeContato);
-
-	    printf("\nTelefone do Contato: ");
-		fflush(stdin);
-		gets(aux2);
-		x.telefoneContato=atoi(aux2);
 
 		fwrite(&x, sizeof(paciente), 1, arq);
 	    system("cls");
@@ -189,10 +175,11 @@ void cadastraMedico(void)
 {
 	FILE * arq;
 	medico x;
+	char aux[15];
 	int num=0;
 	do{
 
-		printf("\n\n\t     Cadastro de novo DVD \n\n");
+		printf("\n\n\t     Cadastro de novo Medico \n\n");
 		if ((arq = fopen(arquivoMedico, "ab")) == NULL) {
 			fprintf(stderr, "\n\tImpossivel abrir o arquivo %s!\n", arquivoMedico);
 		}
@@ -209,10 +196,10 @@ void cadastraMedico(void)
 		   gets(x.nome);
 	       printf("\nEspecialidade: ");
 	       gets(x.especialidade);
-	       printf("\nDuracao: ");
-	       gets(x.duracao);
-	 	   printf("\nData do Lancamento (ddmmaaaa): ");
-		   scanf("%02d %02d %4d", &x.data_lanc.dia, &x.data_lanc.mes, &x.data_lanc.ano);
+	       printf("\nCRM: ");
+	       fflush(stdin);
+            gets(aux);
+	        x.crm=atoi(aux);
 
 		   fwrite(&x, sizeof(medico), 1, arq);
     	   system("cls");
@@ -256,12 +243,12 @@ paciente c;
 
 	printf("\n\nPacientes Cadastrados\n\n");
 	printf("==========================================================================\n");
-	printf("Cod. Nome\tEndereco\tCpf\t   tel.\t  Contato    \tTel.Cot.    \n");
+	printf("Cod. Nome\tEndereco\tCpf\t   tel.\t    \n");
 	printf("==========================================================================\n\n");
 	printf("--------------------------------------------------------------------------\n");
 	while (fread(&c, sizeof(paciente), 1, arq) > 0) {
 
-     printf("%04d %-10s %-15s %-10s %-10d %-10s %-12d \n",c.codigo,c.nome,c.endereco,c.cpf,c.telefone,c.nomeContato,c.telefoneContato);
+     printf("%04d %-10s %-15s %-12s %-12d  \n",c.codigo,c.nome,c.endereco,c.cpf,c.telefone);
 
 	printf("--------------------------------------------------------------------------\n");
 	}
@@ -278,10 +265,10 @@ paciente c;
     if(num==1){
     	fprintf(arq2,"\n\nPacientes Cadastrados\n\n");
 	    fprintf(arq2,"==========================================================================\n");
-	    fprintf(arq2,"Cod. Nome\tEndereco\tCpf\t   tel.\t  Contato  \tTel.Cot.    \n");
+	    fprintf(arq2,"Cod. Nome\tEndereco\tCpf\t   tel.\t    \n");
      	fprintf(arq2,"--------------------------------------------------------------------------\n");
       	while (fread(&c, sizeof(paciente), 1, arq) > 0) {
-            fprintf(arq2,"%04d %-10s %-10s %-10s %-12d %-10s %-12d \n",c.codigo,c.nome,c.endereco,c.cpf,c.telefone,c.nomeContato,c.telefoneContato);
+            fprintf(arq2,"%04d %-10s %-10s %-10s %-12d  \n",c.codigo,c.nome,c.endereco,c.cpf,c.telefone);
             fprintf(arq2,"--------------------------------------------------------------------------\n");
         }
 	    fprintf(arq2,"==========================================================================\n");
@@ -331,7 +318,7 @@ int i=0,j=0;
 			rewind(arq);
 	        printf("\n\nPacientes cadastrados com esse nome:%s\n\n",nome);
 	        printf("==========================================================================\n");
-	        printf("Cod. Nome\tEndereco\tCpf\t   tel.\t  Contato    \tTel.Cot.    \n");
+	        printf("Cod. Nome\tEndereco\tCpf\t   tel.\t    \n");
 	        printf("==========================================================================\n\n");
 	        printf("--------------------------------------------------------------------------\n");
 
@@ -347,7 +334,7 @@ int i=0,j=0;
 			  }
 			  if(strncmp(nome,c.nome, strlen(nome)) == 0)
               {
-                   printf("%04d %-10s %-15s %-10s %-10d %-10s %-12d \n",c.codigo,c.nome,c.endereco,c.cpf,c.telefone,c.nomeContato,c.telefoneContato);
+                   printf("%04d %-10s %-15s %-10s %-10d \n",c.codigo,c.nome,c.endereco,c.cpf,c.telefone);
 	           printf("--------------------------------------------------------------------------\n");
 			achei = 1;
 			  }
@@ -376,7 +363,7 @@ int i=0,j=0;
 		if(num==1){
 	           fprintf(arq2,"\n\nPacientes cadastrados com esse nome\n\n");
 	           fprintf(arq2,"==========================================================================\n");
-	           fprintf(arq2,"Cod. Nome\tEndereco\tCpf\t   tel.\t  Contato    \tTel.Cot.    \n");
+	           fprintf(arq2,"Cod. Nome\tEndereco\tCpf\t   tel.\t    \n");
 	           fprintf(arq2,"==========================================================================\n\n");
 	           fprintf(arq2,"--------------------------------------------------------------------------\n");
 
@@ -392,7 +379,7 @@ int i=0,j=0;
 		         }
 			  	 if(strncmp(nome,c.nome, strlen(nome)) == 0)
                  {
-				     fprintf(arq2,"%04d %-10s %-10s %-10s %-12d %-10s %-12d \n",c.codigo,c.nome,c.endereco,c.cpf,c.telefone,c.nomeContato,c.telefoneContato);
+				     fprintf(arq2,"%04d %-10s %-10s %-10s %-12d \n",c.codigo,c.nome,c.endereco,c.cpf,c.telefone);
                 	 fprintf(arq2,"--------------------------------------------------------------------------\n");
 				     achei = 1;
 				 }
@@ -460,7 +447,7 @@ int i=0,j=0;
 
 			printf("\n\n\t\tPaciente com esse cpf: %s\n\n",cpf);
 	        printf("==========================================================================\n");
-	        printf("Cod. Nome\tEndereco\tCpf\t   tel.\t  Contato    \tTel.Cot.    \n");
+	        printf("Cod. Nome\tEndereco\tCpf\t   tel.\t    \n");
 	        printf("==========================================================================\n\n");
 	        printf("--------------------------------------------------------------------------\n");
 
@@ -476,7 +463,7 @@ int i=0,j=0;
 			  }
 			  if(strncmp(cpf,c.cpf, strlen(cpf)) == 0)
               {
-                printf("%04d %-10s %-15s %-10s %-10d %-10s %-12d \n",c.codigo,c.nome,c.endereco,c.cpf,c.telefone,c.nomeContato,c.telefoneContato);
+                printf("%04d %-10s %-15s %-10s %-10d \n",c.codigo,c.nome,c.endereco,c.cpf,c.telefone);
                 printf("--------------------------------------------------------------------------\n");
 				achei = 1;
  			  }
@@ -506,7 +493,7 @@ int i=0,j=0;
         {
 			   fprintf(arq2,"\n\n\t\t\t\t\tPaciente com esse CPF: %s\n\n",cpf);
 	           fprintf(arq2,"================================================================================\n");
-	           fprintf(arq2,"Cod. Nome\tEndereco\tCpf\t   tel.\t  Contato    \tTel.Cot.    \n");
+	           fprintf(arq2,"Cod. Nome\tEndereco\tCpf\t   tel.\t    \n");
 	           fprintf(arq2,"================================================================================\n\n");
 	           fprintf(arq2,"--------------------------------------------------------------------------------\n");
 			while(fread(&c, sizeof(paciente), 1, arq) > 0)
@@ -521,7 +508,7 @@ int i=0,j=0;
 			  }
 			  if(strncmp(cpf,c.cpf, strlen(cpf)) == 0)
               {
- 			    fprintf(arq2," %04d %-20s %-20s %-15s %-12d %-20s %-12d  \n",c.codigo,c.nome,c.endereco,c.cpf,c.telefone,c.nomeContato,c.telefoneContato);
+ 			    fprintf(arq2," %04d %-20s %-20s %-15s %-12d  \n",c.codigo,c.nome,c.endereco,c.cpf,c.telefone);
 	            fprintf(arq2,"--------------------------------------------------------------------------------\n");
 				achei = 1;
 			  }
@@ -547,7 +534,7 @@ int i=0,j=0;
 	}while(num2==1);
 }
 
-void consultaDVDs (void){
+void consultaMedicos (void){
 
 system("cls");
 
@@ -558,24 +545,24 @@ int num=0;
 medico c;
 
 	if ((arq = fopen(arquivoMedico, "rb")) == NULL) {
-		fprintf(stderr, "\n\tErro: Nao existe nenhum DVD cadastrado!\n\n\n");
+		fprintf(stderr, "\n\tErro: Nao existe nenhum Medico cadastrado!\n\n\n");
 		printf("\n\n");
         system("pause");
 		return;
 	}
-	if((arq2 = fopen(arqLista"TodosDVDs.txt", "w")) == NULL) {
-		fprintf(stderr, "\n\tErro de abertura do arquivo %s!\n", arqLista"TodosDVDs.txt");
+	if((arq2 = fopen(arqLista"TodosMedicos.txt", "w")) == NULL) {
+		fprintf(stderr, "\n\tErro de abertura do arquivo %s!\n", arqLista"TodosMedicos.txt");
 		printf("\n\n");
         system("pause");
 		return;
 	}
-	printf("\n\n\t\t\t\tDVDs cadastrados\n\n");
+	printf("\n\n\t\t\t\tMedicos cadastrados\n\n");
 	printf("=========================================================================\n");
-	printf(" Cod.: Titulo:                       Genero:    Duracao:    Data Lanc.:  \n");
+	printf(" Cod.: Nome:                      Especialidade:    CRM:  \n");
 	printf("=========================================================================\n\n");
 	printf("-------------------------------------------------------------------------\n");
 	while (fread(&c, sizeof(medico), 1, arq) > 0) {
-	 printf(" %04d %-30s %-10s %-10s  %02d/%02d/%04d   \n",c.codigo, c.nome, c.especialidade, c.duracao, c.data_lanc.dia,c.data_lanc.mes,c.data_lanc.ano);
+	 printf(" %04d %-30s %-10s %-10d     \n",c.codigo, c.nome, c.especialidade, c.crm);
 	 printf("-------------------------------------------------------------------------\n");
 	}
 	printf("\n=========================================================================\n\n");
@@ -592,13 +579,13 @@ medico c;
 	}
 	if(num==1){
 
-			fprintf(arq2,"\n\n\t\t\t\tDVDs cadastrados\n\n");
+			fprintf(arq2,"\n\n\t\t\t\tMedicos cadastrados\n\n");
 			fprintf(arq2,"=========================================================================\n");
-			fprintf(arq2," Cod.: Titulo:                       Genero:    Duracao:    Data Lanc.:  \n");
+			fprintf(arq2," Cod.: Nome:                       Especialidade:    CRM:    \n");
 			fprintf(arq2,"=========================================================================\n\n");
 			fprintf(arq2,"-------------------------------------------------------------------------\n");
 			while(fread(&c, sizeof(medico), 1, arq) > 0) {
-			  fprintf(arq2," %04d %-30s %-10s %-10s  %02d/%02d/%04d   \n",c.codigo, c.nome,c.especialidade, c.duracao, c.data_lanc.dia,c.data_lanc.mes,c.data_lanc.ano);
+			  fprintf(arq2," %04d %-30s %-10s %-10s   \n",c.codigo, c.nome,c.especialidade, c.crm);
 	 		  fprintf(arq2,"-------------------------------------------------------------------------\n");
 	        }
 			 fprintf(arq2,"\n=========================================================================\n\n");
@@ -617,7 +604,7 @@ medico c;
     fclose(arq2);
 }
 
-void consultaDVDCodigo(void){
+void consultaMedicoCodigo(void){
 
 	FILE * arq;
 	FILE * arq2;
@@ -631,37 +618,36 @@ void consultaDVDCodigo(void){
 	do{
 
 		if ((arq = fopen(arquivoMedico, "rb")) == NULL) {
-			fprintf(stderr, "\n\tErro: Nao existe nenhum DVD cadastrado!\n");
+			fprintf(stderr, "\n\tErro: Nao existe nenhum Medico cadastrado!\n");
       		printf("\n\n");
             system("pause");
 			return;
 		}
 
-		if((arq2 = fopen(arqLista"PesquisaDVDCodigo.txt", "w")) == NULL) {
-			fprintf(stderr, "\n\tErro de abertura do arquivo %s!\n",arqLista"PesquisaDVDCodigo.txt");
+		if((arq2 = fopen(arqLista"PesquisaMedicoCodigo.txt", "w")) == NULL) {
+			fprintf(stderr, "\n\tErro de abertura do arquivo %s!\n",arqLista"PesquisaMedicoCodigo.txt");
             printf("\n\n");
 			system("pause");
     		return;
 		}
 
 	 do{
-			printf("\tCodigo do DVD: ");
+			printf("\tCodigo do Medico: ");
 			fflush(stdin);
 			scanf("%d", &codigo);
 		    printf("\n\n");
 
 			rewind(arq);
 
-			printf("\n\n\t\t\t\tDVD cadastrado com o codigo: %d\n\n",codigo);
+			printf("\n\n\t\t\t\tMedico cadastrado com o codigo: %d\n\n",codigo);
 			printf("=========================================================================\n");
-			printf(" Cod.: Titulo:                       Genero:    Duracao:    Data Lanc.:  \n");
+			printf(" Cod.: Nome:                       Especialidade:    CRM:  \n");
 			printf("=========================================================================\n\n");
 			printf("-------------------------------------------------------------------------\n");
 			while(fread(&c, sizeof(medico), 1, arq) > 0) {
 
 				if( codigo == c.codigo){
-		 			printf(" %04d %-30s %-10s %-10s  %02d/%02d/%04d   \n",c.codigo, c.nome, c.especialidade, c.duracao,
-					  c.data_lanc.dia,c.data_lanc.mes,c.data_lanc.ano);
+		 			printf(" %04d %-30s %-10s %-10d   \n",c.codigo, c.nome, c.especialidade, c.crm);
 					printf("-------------------------------------------------------------------------\n");
 
 						 achei = 1;
@@ -672,7 +658,7 @@ void consultaDVDCodigo(void){
 		    if (!achei){
 
 			  system ("cls");
-			  printf("\n\n\tNao existe DVDs cadastrados com esse titulo: %d\n\n",codigo);
+			  printf("\n\n\tNao existe Medicos cadastrados com esse nome: %d\n\n",codigo);
 			  printf("\n\tDigite Novamente !\n\n");
 
 			}
@@ -691,15 +677,15 @@ void consultaDVDCodigo(void){
 		}
 		if(num==1)
         {
-				fprintf(arq2,"\n\n\t\t\t\tDVD cadastrado com o codigo: %d\n\n",codigo);
+				fprintf(arq2,"\n\n\t\t\t\tMedico cadastrado com o codigo: %d\n\n",codigo);
 				fprintf(arq2,"=========================================================================\n");
-				fprintf(arq2," Cod.: Titulo:                       Genero:    Duracao:    Data Lanc.:  \n");
+				fprintf(arq2," Cod.: Nome:                       Especialidade:    CRM:  \n");
 				fprintf(arq2,"=========================================================================\n\n");
 				fprintf(arq2,"-------------------------------------------------------------------------\n");
 			    while(fread(&c, sizeof(medico), 1, arq) > 0)
                 {
 					if( codigo == c.codigo){
-		 			fprintf(arq2," %04d %-30s %-10s %-10s  %02d/%02d/%04d   \n",c.codigo, c.nome, c.especialidade, c.duracao,c.data_lanc.dia,c.data_lanc.mes,c.data_lanc.ano);
+		 			fprintf(arq2," %04d %-30s %-10s %-10d   \n",c.codigo, c.nome, c.especialidade, c.crm);
 					fprintf(arq2,"-------------------------------------------------------------------------\n");
  				    achei = 1;
 	       			}
@@ -763,7 +749,7 @@ void consultaMedicoNome(void){
 
 				printf("\n\n\t\t\t\tConsulta de Medico por Nome %s\n\n",nome);
 				printf("=========================================================================\n");
-				printf("Cod.: Nome:                       Genero:    Duracao:    Data Lanc.: \n");
+				printf("Cod.: Nome:                       Especialidade:    CRM: \n");
 				printf("=========================================================================\n\n");
 				printf("-------------------------------------------------------------------------\n");
 
@@ -775,7 +761,7 @@ void consultaMedicoNome(void){
 					  	  }
 					  }
 						if(strncmp(nome,c.nome, strlen(nome)) == 0){
-			 			 printf(" %04d %-30s %-10s %-10s  %02d/%02d/%04d  \n",c.codigo, c.nome, c.especialidade, c.duracao,c.data_lanc.dia,c.data_lanc.mes,c.data_lanc.ano);
+			 			 printf(" %04d %-30s %-10s %-10d  \n",c.codigo, c.nome, c.especialidade, c.crm);
         				 printf("-------------------------------------------------------------------------\n");
 					     achei = 1;
 						}
@@ -804,7 +790,7 @@ void consultaMedicoNome(void){
             {
 					fprintf(arq2,"\n\n\t\t\t\tConsulta Medico por nome %d\n\n",nome);
 					fprintf(arq2,"=========================================================================\n");
-					fprintf(arq2,"Cod.: Nome:                       Especialidade:    Duracao:    Data Lanc.: \n");
+					fprintf(arq2,"Cod.: Nome:                       Especialidade:    CRM: \n");
 					fprintf(arq2,"=========================================================================\n\n");
 					fprintf(arq2,"-------------------------------------------------------------------------\n");
 
@@ -820,7 +806,7 @@ void consultaMedicoNome(void){
 					  }
 					  if(strncmp(nome,c.nome, strlen(nome)) == 0)
                       {
-			 			 fprintf(arq2," %04d %-30s %-10s %-10s  %02d/%02d/%04d   \n",c.codigo, c.nome, c.especialidade, c.duracao,c.data_lanc.dia,c.data_lanc.mes,c.data_lanc.ano);
+			 			 fprintf(arq2," %04d %-30s %-10s %-10d   \n",c.codigo, c.nome, c.especialidade, c.crm);
 						 fprintf(arq2,"-------------------------------------------------------------------------\n");
                          achei = 1;
 					  }
