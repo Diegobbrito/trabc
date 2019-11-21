@@ -23,7 +23,7 @@ typedef struct
     int codigo;
 	char nome[30];
     char endereco[50];
-	char cpf[15];
+	char cpf[11];
     int telefone;
 }paciente;
 
@@ -43,6 +43,7 @@ void consultaPacienteCPF(void);
 void consultaMedicos(void);
 void consultaMedicoCodigo(void);
 void consultaMedicoNome(void);
+char validaCPF();
 int main(){
     int op;
 	do {
@@ -111,7 +112,7 @@ void cadastraPaciente(void)
 	FILE * arq;
 	paciente x;
     char aux[15];
-    char cpf[15];
+    char cpf[12];
     int i=0,j=0;
     int a = 0, num=0;
     do{
@@ -125,7 +126,8 @@ void cadastraPaciente(void)
 		   a=0;
 		   printf("\nCPF: ");
 		   fflush(stdin);
-		   gets(cpf);
+            gets(cpf);
+		   cpf = validaCPF();
 
 		   while(fread(&x, sizeof(paciente), 1, arq) > 0) {
 			if(strncmp(cpf,x.cpf, strlen(cpf)) == 0){
@@ -140,7 +142,7 @@ void cadastraPaciente(void)
 	        fseek(arq, 0, SEEK_END);
 		x.codigo= ftell(arq) / sizeof(paciente) + 1;
 		printf("\tCodigo do Paciente: %d\n\n", x.codigo);
-	        strcpy(x.cpf,cpf);
+            strcpy(x.cpf,cpf);
 
 		printf("\nNome: ");
 		fflush(stdin);
@@ -833,3 +835,51 @@ void consultaMedicoNome(void){
   		system("cls");
 		}while(num2==1);
 }
+
+char validaCPF(){
+
+    int soma, resultado, numero, contador;
+    char digito10, digito11, cpf[12];
+
+
+       do{
+
+            fflush(stdin);
+            system("cls");
+            printf("Digite o CPF apenas com os 11 numeros: \n");
+            gets(cpf);
+            soma=0;
+     for(contador=0; contador<9; contador++){
+        numero=cpf[contador]-48;
+        soma = soma+(numero*(10-contador));
+        }
+        resultado = 11-(soma%11);
+        if((resultado == 10)|| (resultado ==11)){
+            digito10 = '0';
+        }else{
+            digito10 = resultado+48;
+        }
+        soma =0;
+        for(contador=0; contador<10; contador++){
+        numero=cpf[contador]-48;
+        soma = soma+(numero*(11-contador));
+        }
+        resultado=11-(soma%11);
+            if((resultado == 10)|| (resultado ==11)){
+                digito11 = '0';
+            }else{
+                digito11 = resultado+48;
+            }
+       }while((digito10!=cpf[9])&&(digito11!=cpf[10]));
+
+       return(cpf);
+
+}
+
+
+
+
+
+
+
+
