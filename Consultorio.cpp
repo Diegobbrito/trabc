@@ -43,7 +43,7 @@ void consultaPacienteCPF(void);
 void consultaMedicos(void);
 void consultaMedicoCodigo(void);
 void consultaMedicoNome(void);
-char validaCPF();
+//char validaCPF();
 int main(){
     int op;
 	do {
@@ -111,8 +111,14 @@ void cadastraPaciente(void)
 
 	FILE * arq;
 	paciente x;
+
+
+	 int soma, resultado, numero, contador;
+    char digito10, digito11;
+
+
     char aux[15];
-    char cpf[12];
+    char cpf[11];
     int i=0,j=0;
     int a = 0, num=0;
     do{
@@ -124,10 +130,40 @@ void cadastraPaciente(void)
 		   }
 		   fseek(arq, 0, SEEK_SET);
 		   a=0;
-		   printf("\nCPF: ");
-		   fflush(stdin);
+
+            //Validacao do cpf
+
+		   do{
+
+            fflush(stdin);
+            system("cls");
+            printf("Digite o CPF apenas com os 11 numeros: \n");
             gets(cpf);
-		   cpf = validaCPF();
+            soma=0;
+        for(contador=0; contador<9; contador++){
+            numero=cpf[contador]-48;
+            soma = soma+(numero*(10-contador));
+        }
+        resultado = 11-(soma%11);
+        if((resultado == 10)|| (resultado ==11)){
+            digito10 = '0';
+        }else{
+            digito10 = resultado+48;
+        }
+        soma =0;
+        for(contador=0; contador<10; contador++){
+            numero=cpf[contador]-48;
+            soma = soma+(numero*(11-contador));
+        }
+        resultado=11-(soma%11);
+            if((resultado == 10)|| (resultado ==11)){
+                digito11 = '0';
+            }else{
+                digito11 = resultado+48;
+            }
+       }while((digito10!=cpf[9])&&(digito11!=cpf[10]));
+
+
 
 		   while(fread(&x, sizeof(paciente), 1, arq) > 0) {
 			if(strncmp(cpf,x.cpf, strlen(cpf)) == 0){
@@ -141,6 +177,7 @@ void cadastraPaciente(void)
 		}while(a > 0);
 	        fseek(arq, 0, SEEK_END);
 		x.codigo= ftell(arq) / sizeof(paciente) + 1;
+		system("cls");
 		printf("\tCodigo do Paciente: %d\n\n", x.codigo);
             strcpy(x.cpf,cpf);
 
@@ -836,7 +873,7 @@ void consultaMedicoNome(void){
 		}while(num2==1);
 }
 
-char validaCPF(){
+/*char validaCPF(){
 
     int soma, resultado, numero, contador;
     char digito10, digito11, cpf[12];
@@ -874,7 +911,7 @@ char validaCPF(){
 
        return(cpf);
 
-}
+}*/
 
 
 
