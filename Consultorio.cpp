@@ -43,7 +43,7 @@ void consultaPacienteCPF(void);
 void consultaMedicos(void);
 void consultaMedicoCodigo(void);
 void consultaMedicoNome(void);
-char validaCPF();
+char validaCPF(char *captura_cpf);
 int main(){
     int op;
 	do {
@@ -124,10 +124,10 @@ void cadastraPaciente(void)
 		   }
 		   fseek(arq, 0, SEEK_SET);
 		   a=0;
-		   printf("\nCPF: ");
+		   /*printf("\nCPF: ");
 		   fflush(stdin);
-            gets(cpf);
-		   cpf = validaCPF();
+           gets(cpf);*/
+		   validaCPF(cpf);
 
 		   while(fread(&x, sizeof(paciente), 1, arq) > 0) {
 			if(strncmp(cpf,x.cpf, strlen(cpf)) == 0){
@@ -836,7 +836,7 @@ void consultaMedicoNome(void){
 		}while(num2==1);
 }
 
-char validaCPF(){
+char validaCPF(char *captura_cpf){
 
     int soma, resultado, numero, contador;
     char digito10, digito11, cpf[12];
@@ -846,7 +846,7 @@ char validaCPF(){
 
             fflush(stdin);
             system("cls");
-            printf("Digite o CPF apenas com os 11 numeros: \n");
+            printf("\n\tDigite o CPF apenas com os 11 numeros: \n");
             gets(cpf);
             soma=0;
      for(contador=0; contador<9; contador++){
@@ -872,7 +872,7 @@ char validaCPF(){
             }
        }while((digito10!=cpf[9])&&(digito11!=cpf[10]));
 
-       return(cpf);
+       return 0;
 
 }
 
