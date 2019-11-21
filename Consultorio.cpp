@@ -43,7 +43,11 @@ void consultaPacienteCPF(void);
 void consultaMedicos(void);
 void consultaMedicoCodigo(void);
 void consultaMedicoNome(void);
+/*<<<<<<< HEAD
 char validaCPF(char *captura_cpf);
+=======
+//char validaCPF();
+>>>>>>> 5ed8c5e17e8659b7579804b4fa1734a309a5ca56*/
 int main(){
     int op;
 	do {
@@ -111,8 +115,14 @@ void cadastraPaciente(void)
 
 	FILE * arq;
 	paciente x;
+
+
+	 int soma, resultado, numero, contador;
+    char digito10, digito11;
+
+
     char aux[15];
-    char cpf[12];
+    char cpf[11];
     int i=0,j=0;
     int a = 0, num=0;
     do{
@@ -123,11 +133,63 @@ void cadastraPaciente(void)
 				fprintf(stderr, "\n\tImpossivel abrir o arquivo %s!\n", arquivoPacientes);
 		   }
 		   fseek(arq, 0, SEEK_SET);
-		   a=0;
-		   /*printf("\nCPF: ");
+		   a=0;/*
+<<<<<<< HEAD
+		   printf("\nCPF: ");
 		   fflush(stdin);
-           gets(cpf);*/
+           gets(cpf);
 		   validaCPF(cpf);
+=======
+*/
+            //Validacao do cpf
+
+		   do{
+
+            fflush(stdin);
+            system("cls");
+            printf("Digite o CPF apenas com os 11 numeros: \n");
+            gets(cpf);
+
+
+            soma=0;
+        for(contador=0; contador<9; contador++){
+            numero=cpf[contador]-48;
+            soma = soma+(numero*(10-contador));
+        }
+        resultado = 11-(soma%11);
+        if((resultado == 10)|| (resultado ==11)){
+            digito10 = '0';
+        }else{
+            digito10 = resultado+48;
+        }
+        soma =0;
+        for(contador=0; contador<10; contador++){
+            numero=cpf[contador]-48;
+            soma = soma+(numero*(11-contador));
+        }
+        resultado=11-(soma%11);
+            if((resultado == 10)|| (resultado ==11)){
+                digito11 = '0';
+            }else{
+                digito11 = resultado+48;
+            }
+       }while((digito10!=cpf[9])&&(digito11!=cpf[10])
+              && cpf[0]!= 0 && cpf[0]!= 1 && cpf[0]!= 2 && cpf[0]!= 3 && cpf[0]!= 4 && cpf[0]!= 5 && cpf[0]!= 6 && cpf[0]!= 7 && cpf[0]!= 8 && cpf[0]!= 9
+              && cpf[1]!= 0 && cpf[1]!= 1 && cpf[1]!= 2 && cpf[1]!= 3 && cpf[1]!= 4 && cpf[1]!= 5 && cpf[1]!= 6 && cpf[1]!= 7 && cpf[1]!= 8 && cpf[1]!= 9
+              && cpf[2]!= 0 && cpf[2]!= 1 && cpf[2]!= 2 && cpf[2]!= 3 && cpf[2]!= 4 && cpf[2]!= 5 && cpf[2]!= 6 && cpf[2]!= 7 && cpf[2]!= 8 && cpf[2]!= 9
+              && cpf[3]!= 0 && cpf[3]!= 1 && cpf[3]!= 2 && cpf[3]!= 3 && cpf[3]!= 4 && cpf[3]!= 5 && cpf[3]!= 6 && cpf[3]!= 7 && cpf[3]!= 8 && cpf[3]!= 9
+              && cpf[4]!= 0 && cpf[4]!= 1 && cpf[4]!= 2 && cpf[4]!= 3 && cpf[4]!= 4 && cpf[4]!= 5 && cpf[4]!= 6 && cpf[4]!= 7 && cpf[4]!= 8 && cpf[4]!= 9
+              && cpf[5]!= 0 && cpf[5]!= 1 && cpf[5]!= 2 && cpf[5]!= 3 && cpf[5]!= 4 && cpf[5]!= 5 && cpf[5]!= 6 && cpf[5]!= 7 && cpf[5]!= 8 && cpf[5]!= 9
+              && cpf[6]!= 0 && cpf[6]!= 1 && cpf[6]!= 2 && cpf[6]!= 3 && cpf[6]!= 4 && cpf[6]!= 5 && cpf[6]!= 6 && cpf[6]!= 7 && cpf[6]!= 8 && cpf[6]!= 9
+              && cpf[7]!= 0 && cpf[7]!= 1 && cpf[7]!= 2 && cpf[7]!= 3 && cpf[7]!= 4 && cpf[7]!= 5 && cpf[7]!= 6 && cpf[7]!= 7 && cpf[7]!= 8 && cpf[7]!= 9
+              && cpf[8]!= 0 && cpf[8]!= 1 && cpf[8]!= 2 && cpf[8]!= 3 && cpf[8]!= 4 && cpf[8]!= 5 && cpf[8]!= 6 && cpf[8]!= 7 && cpf[8]!= 8 && cpf[8]!= 9
+              && cpf[9]!= 0 && cpf[9]!= 1 && cpf[9]!= 2 && cpf[9]!= 3 && cpf[9]!= 4 && cpf[9]!= 5 && cpf[9]!= 6 && cpf[9]!= 7 && cpf[9]!= 8 && cpf[9]!= 9
+              && cpf[10]!= 0 && cpf[10]!= 1 && cpf[10]!= 2 && cpf[10]!= 3 && cpf[10]!= 4 && cpf[10]!= 5 && cpf[10]!= 6 && cpf[10]!= 8 && cpf[10]!= 8 && cpf[10]!= 9
+              && cpf[11]!= 0 && cpf[11]!= 1 && cpf[11]!= 2 && cpf[11]!= 3 && cpf[11]!= 4 && cpf[11]!= 5 && cpf[11]!= 6 && cpf[11]!= 8 && cpf[11]!= 8 && cpf[11]!= 9
+              );
+
+
+//>>>>>>> 5ed8c5e17e8659b7579804b4fa1734a309a5ca56
 
 		   while(fread(&x, sizeof(paciente), 1, arq) > 0) {
 			if(strncmp(cpf,x.cpf, strlen(cpf)) == 0){
@@ -141,16 +203,21 @@ void cadastraPaciente(void)
 		}while(a > 0);
 	        fseek(arq, 0, SEEK_END);
 		x.codigo= ftell(arq) / sizeof(paciente) + 1;
+		system("cls");
 		printf("\tCodigo do Paciente: %d\n\n", x.codigo);
             strcpy(x.cpf,cpf);
 
-		printf("\nNome: ");
+		do{
+			printf("\nNome: ");
 		fflush(stdin);
 		gets(x.nome);
+		}while(x.nome != '\0');
 
+		do{
 		printf("\nEndereco: ");
 		fflush(stdin);
 		gets(x.endereco);
+		}while(x.endereco != '\0')
 
 		printf("\nTelefone: ");
 		fflush(stdin);
@@ -836,7 +903,11 @@ void consultaMedicoNome(void){
 		}while(num2==1);
 }
 
+/*<<<<<<< HEAD
 char validaCPF(char *captura_cpf){
+=======
+char validaCPF(){
+>>>>>>> 5ed8c5e17e8659b7579804b4fa1734a309a5ca56
 
     int soma, resultado, numero, contador;
     char digito10, digito11, cpf[12];
@@ -874,7 +945,7 @@ char validaCPF(char *captura_cpf){
 
        return 0;
 
-}
+}*/
 
 
 
