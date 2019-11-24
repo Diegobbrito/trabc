@@ -1,6 +1,5 @@
 /*Trabalho Final da disciplina de Linguagem de Programação*/
 
-//teste
 #include <stdio.h>
 #include <stdlib.h>
 #include <conio.h>
@@ -17,7 +16,6 @@ typedef struct
 
 }dt;
 
-//struct paciente, temos que verificar se só esses dados sao suficientes ou se vamos remover algo também
 typedef struct
 {
     int codigo;
@@ -192,10 +190,11 @@ void cadastraMedico(void)
 	       system("cls");
 	       printf("Cadastro de Medicos\n\n");
 	       printf("Codigo: %d\n\n", x.codigo);
-	       printf("\nNome: ");
+	       do{printf("\nNome: ");
 	       fflush(stdin);
 		   gets(x.nome);
 		   system("cls");
+	       }while(x.nome != '\0');
 
 		   //Cadastra a Especialidade dentre as 4 opcoes, fazendo validação das 4 disponiveis
 	       printf("\nEspecialidade:\n");
@@ -227,10 +226,11 @@ void cadastraMedico(void)
             strcpy(x.especialidade, "Ginecologista");
 	       }
 
-	       printf("\nCRM: ");
+	       do{printf("\nCRM: ");
 	       fflush(stdin);
             gets(aux);
 	        x.crm=atoi(aux);
+	        }while(x.crm != '\0');
 
 		   fwrite(&x, sizeof(medico), 1, arq);
     	   system("cls");
