@@ -194,7 +194,7 @@ void cadastraMedico(void)
 	       fflush(stdin);
 		   gets(x.nome);
 		   system("cls");
-	       }while(x.nome != '\0');
+	       }while(x.nome[0] == '\0');
 
 		   //Cadastra a Especialidade dentre as 4 opcoes, fazendo validação das 4 disponiveis
 	       printf("\nEspecialidade:\n");
@@ -225,12 +225,12 @@ void cadastraMedico(void)
 	       else{
             strcpy(x.especialidade, "Ginecologista");
 	       }
-
-	       do{printf("\nCRM: ");
+            system("cls");
+	       printf("\nCRM: ");
 	       fflush(stdin);
             gets(aux);
 	        x.crm=atoi(aux);
-	        }while(x.crm != '\0');
+
 
 		   fwrite(&x, sizeof(medico), 1, arq);
     	   system("cls");
