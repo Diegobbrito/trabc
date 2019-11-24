@@ -1,7 +1,9 @@
 /*Trabalho Final da disciplina de Linguagem de Programação*/
 
+
 //Teste Gustavo
 //teste
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <conio.h>
@@ -18,7 +20,6 @@ typedef struct
 
 }dt;
 
-//struct paciente, temos que verificar se só esses dados sao suficientes ou se vamos remover algo também
 typedef struct
 {
     int codigo;
@@ -31,8 +32,8 @@ typedef struct
 typedef struct
 {
     int codigo;
-	char nome[30];
-	char especialidade[20];
+	char nome[50];
+	char especialidade[30];
     int crm;
 }medico;
 
@@ -53,7 +54,7 @@ int main(){
 		printf("\n\t1- Cadastrar Pacientes\n");
 		printf("\n\t2- Cadastrar Medicos\n");
 		printf("\n\t3- Mostrar todos os Pacientes Cadastrados\n");
-                printf("\n\t4- Consultar Pacientes por Nome\n");
+        printf("\n\t4- Consultar Pacientes por Nome\n");
 		printf("\n\t5- Consultar Pacientes por CPF\n");
 		printf("\n\t6- Mostrar todos os Medicos Cadastrados\n");
 		printf("\n\t7- Consultar Medicos por Codigos\n");
@@ -179,7 +180,7 @@ void cadastraMedico(void)
 	FILE * arq;
 	medico x;
 	char aux[15];
-	int num=0;
+	int num=0, esp;
 	do{
 
 		printf("\n\n\t     Cadastro de novo Medico \n\n");
@@ -192,17 +193,48 @@ void cadastraMedico(void)
 
 	       system("cls");
 	       printf("Cadastro de Medicos\n\n");
-
 	       printf("Codigo: %d\n\n", x.codigo);
-	       printf("\nNome: ");
+	       do{printf("\nNome: ");
 	       fflush(stdin);
 		   gets(x.nome);
-	       printf("\nEspecialidade: ");
-	       gets(x.especialidade);
+		   system("cls");
+	       }while(x.nome[0] == '\0');
+
+		   //Cadastra a Especialidade dentre as 4 opcoes, fazendo validação das 4 disponiveis
+	       printf("\nEspecialidade:\n");
+	       printf("1- Cardiologista\n");
+	       printf("2- Otorrino\n");
+	       printf("3- Pediatra\n");
+	       printf("4- Ginecologista\n");
+	       scanf("%d", &esp);
+	       while(esp != 1 && esp != 2 && esp !=3 && esp != 4){
+            system("cls");
+            printf("Opcao Invalida\n");
+            printf("\nEspecialidades disponiveis: \n");
+            printf("1- Cardiologista\n");
+            printf("2- Otorrino\n");
+            printf("3- Pediatra\n");
+            printf("4- Ginecologista\n");
+            scanf("%d", &esp);
+	       }
+	       if(esp == 1){
+            strcpy(x.especialidade, "Cardiologista");
+	       }
+	       else if(esp == 2){
+            strcpy(x.especialidade, "Otorrino");
+	       }
+	       else if(esp == 3){
+            strcpy(x.especialidade, "Pediatra");
+	       }
+	       else{
+            strcpy(x.especialidade, "Ginecologista");
+	       }
+            system("cls");
 	       printf("\nCRM: ");
 	       fflush(stdin);
             gets(aux);
 	        x.crm=atoi(aux);
+
 
 		   fwrite(&x, sizeof(medico), 1, arq);
     	   system("cls");
