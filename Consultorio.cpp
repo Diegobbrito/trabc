@@ -34,7 +34,7 @@ typedef struct
     int codigo;
 	char nome[50];
 	char especialidade[30];
-    int crm;
+    char crm[6];
 }medico;
 
 void cadastraPaciente(void);
@@ -225,76 +225,101 @@ void cadastraMedico(void)
 {
 	FILE * arq;
 	medico x;
-	char aux[15];
+	char crm[6];
 	int num=0, esp;
+	int i=0,j=0;
+    int a = 0, terminou;
+    
 	do{
-
-		printf("\n\n\t     Cadastro de novo Medico \n\n");
-		if ((arq = fopen(arquivoMedico, "ab")) == NULL) {
+		system("cls");	
+		printf("\n\n\t-----------------------------");
+        printf("\n\t   Cadastro de Novo Medico");
+        printf("\n\t-----------------------------\n");
+		printf("\nCRM: ");
+		
+		if ((arq = fopen(arquivoMedico, "a+b")) == NULL) {
 			fprintf(stderr, "\n\tImpossivel abrir o arquivo %s!\n", arquivoMedico);
 		}
-		fseek(arq, 0, SEEK_END);
+		else
+		{
+			do{
+				fseek(arq, 0, SEEK_SET);
+				terminou = 0;
+		   		a=0;
+		   		i=0;
+		   		fflush(stdin);
+		   		for(i=0; i<5; i++){
+		   			fflush(stdin);
+		   			crm[i] = getch();
+		   			printf("%c", crm[i]);
+					if((int)crm[i] < 48 || (int)crm[i] > 57){
+						printf("\n\n\tSomente e permitido digitar numeros de 0 a 9 e o CRM deve ter 5 digitos. Digite o CRM novamente.");
+						printf("\n\nCRM: ");
+						i = 0;
+					}
+				}
+				while(fread(&x, sizeof(medico), 1, arq) > 0) {
+					if(strncmp(crm,x.crm, strlen(crm)) == 0){
+						a=a+1;
+		    		}
+				}
+				if(a > 0){
+					printf("\n\n\tJa existe um paciente cadastrado com esse CRM: %s. Digite novamente:",crm);
+					printf("\n\nCRM: ");
+				}
+				else{
+					strcpy(x.crm, crm);
+					fseek(arq, 0, SEEK_END);
+					x.codigo = ftell(arq) / sizeof(medico) + 1;
+					printf("\n\nCodigo: %d\n", x.codigo);
+				    do{printf("\nNome: ");
+			    	   	fflush(stdin);
+					   	gets(x.nome);
+			    	}while(x.nome[0] == '\0');
 
-		x.codigo = ftell(arq) / sizeof(medico) + 1;
-
-	       system("cls");
-	       printf("Cadastro de Medicos\n\n");
-	       printf("Codigo: %d\n\n", x.codigo);
-	       do{printf("\nNome: ");
-	       fflush(stdin);
-		   gets(x.nome);
-		   system("cls");
-	       }while(x.nome[0] == '\0');
-
-		   //Cadastra a Especialidade dentre as 4 opcoes, fazendo validação das 4 disponiveis
-	       printf("\nEspecialidade:\n");
-	       printf("1- Cardiologista\n");
-	       printf("2- Otorrino\n");
-	       printf("3- Pediatra\n");
-	       printf("4- Ginecologista\n");
-	       scanf("%d", &esp);
-	       while(esp != 1 && esp != 2 && esp !=3 && esp != 4){
-            system("cls");
-            printf("Opcao Invalida\n");
-            printf("\nEspecialidades disponiveis: \n");
-            printf("1- Cardiologista\n");
-            printf("2- Otorrino\n");
-            printf("3- Pediatra\n");
-            printf("4- Ginecologista\n");
-            scanf("%d", &esp);
-	       }
-	       if(esp == 1){
-            strcpy(x.especialidade, "Cardiologista");
-	       }
-	       else if(esp == 2){
-            strcpy(x.especialidade, "Otorrino");
-	       }
-	       else if(esp == 3){
-            strcpy(x.especialidade, "Pediatra");
-	       }
-	       else{
-            strcpy(x.especialidade, "Ginecologista");
-	       }
-            system("cls");
-	       printf("\nCRM: ");
-	       fflush(stdin);
-            gets(aux);
-	        x.crm=atoi(aux);
-
-
-		   fwrite(&x, sizeof(medico), 1, arq);
-    	   system("cls");
-		   printf("\n\n\tMedico Cadastrado Com Sucesso!\n\n");
-
-		   fclose(arq);
-
-			printf("\n\tDeseja Cadastrar outro Medico ?\n\n\t1- Sim\n\n\t2- Nao\n\n ");
-			scanf("%d", &num);
-			while(num < 0 || num > 2){
-  		  	     system ("cls");
-				 printf("\n\tOpcao Invalida!!\n\n\tDigite novamente:\n\n\t\t1-Sim\n\n\t\t2- Nao\n");
-		         scanf("%d", &num);
-           }
+					//Cadastra a Especialidade dentre as 4 opcoes, fazendo validação das 4 disponiveis
+					printf("\nEspecialidade:\n");
+					printf("1- Cardiologista\n");
+					printf("2- Otorrino\n");
+					printf("3- Pediatra\n");
+					printf("4- Ginecologista\n");
+					scanf("%d", &esp);
+					while(esp != 1 && esp != 2 && esp !=3 && esp != 4){
+						printf("Opcao Invalida\n");
+						printf("\nEspecialidades disponiveis: \n");
+						printf("1- Cardiologista\n");
+						printf("2- Otorrino\n");
+						printf("3- Pediatra\n");
+						printf("4- Ginecologista\n");
+						scanf("%d", &esp);
+	    		   	}	
+					if(esp == 1){
+        		    strcpy(x.especialidade, "Cardiologista");
+					}
+					else if(esp == 2){
+        		    strcpy(x.especialidade, "Otorrino");
+					}
+					else if(esp == 3){
+        		    strcpy(x.especialidade, "Pediatra");
+					}
+					else{
+        		    strcpy(x.especialidade, "Ginecologista");
+					}
+					fwrite(&x, sizeof(medico), 1, arq);
+					system("cls");
+					printf("\n\n\tMedico Cadastrado Com Sucesso!\n\n");
+					fclose(arq);
+	
+					printf("\n\tDeseja Cadastrar outro Medico ?\n\n\t1- Sim\n\n\t2- Nao\n\n ");
+					scanf("%d", &num);
+					while(num < 0 || num > 2){
+		  		  	    system ("cls");
+						printf("\n\tOpcao Invalida!!\n\n\tDigite novamente:\n\n\t\t1-Sim\n\n\t\t2- Nao\n");
+			        	scanf("%d", &num);
+	           		}
+	       		}
+		    }while(a > 0);
+		}
 	}while(num==1);
 }
 
@@ -644,7 +669,7 @@ medico c;
 	printf("=========================================================================\n\n");
 	printf("-------------------------------------------------------------------------\n");
 	while (fread(&c, sizeof(medico), 1, arq) > 0) {
-	 printf(" %04d %-30s %-10s %-10d     \n",c.codigo, c.nome, c.especialidade, c.crm);
+	 printf(" %04d %-30s %-10s %-10s     \n",c.codigo, c.nome, c.especialidade, c.crm);
 	 printf("-------------------------------------------------------------------------\n");
 	}
 	printf("\n=========================================================================\n\n");
