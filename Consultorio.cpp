@@ -1,8 +1,4 @@
-/*Trabalho Final da disciplina de Linguagem de Programacao*/
-
-
-//Teste Gustavo
-//teste
+/*Trabalho Final da disciplina de Linguagem de Programação*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,6 +8,8 @@
 #define arquivoPacientes "pacientes.dat"
 #define arquivoMedico "medico.dat"
 #define arqLista
+
+//Define q data com os seguintes parâmetros
 typedef struct
 {
 	int dia;
@@ -20,15 +18,17 @@ typedef struct
 
 }dt;
 
+//Define atributos do paciente
 typedef struct
 {
     int codigo;
 	char nome[30];
     char endereco[50];
-	char cpf[12];
-    int telefone;
+	char cpf[15];
+    char telefone[15];
 }paciente;
 
+//Define atributos do médico
 typedef struct
 {
     int codigo;
@@ -45,10 +45,12 @@ void consultaPacienteCPF(void);
 void consultaMedicos(void);
 void consultaMedicoCodigo(void);
 void consultaMedicoNome(void);
+void mascara(char *frase, char *formato);
 
 int main(){
     int op;
 	do {
+		system ("cls");
 		printf("\n\n\t-------------------------------\n");
 		printf("\t   Escolha uma das opcoes      \n");
 		printf("\t-------------------------------\n");
@@ -61,7 +63,7 @@ int main(){
 		printf("\n\t7- Consultar Medicos por Codigos\n");
 		printf("\n\t8- Consultar Medicos por Nome\n");
 		printf("\n\t0- Sair do programa\n\n");
-		printf("\tEscola uma Opcao: ");
+		printf("\tEscolha uma Opcao: ");
 		scanf("%d", &op);
 		switch(op){
 		    case 1:
@@ -111,124 +113,111 @@ int main(){
 void cadastraPaciente(void)
 {
 
-	FILE * arq;
+FILE *arq;
 	paciente x;
-
     char aux[15];
-    char cpf[12];
-    char l;
-    int i=0,j, valid =0;
-    int a = 0, num=0;
-    int digito1,
-        digito2,
-        temp = 0;
+    char cpf[15];
+    char formatoCPF[] = "###.###.###-##";
+    int i=0,j=0;
+    int a = 0, num=0, terminou;
     do{
-            printf("\n\n\t     Cadastro de Novo Paciente\n\n");
-		do{
-
-		   if ((arq = fopen(arquivoPacientes, "a+b")) == NULL) {
-				fprintf(stderr, "\n\tImpossivel abrir o arquivo %s!\n", arquivoPacientes);
-		   }
-		   fseek(arq, 0, SEEK_SET);
-		   a=0;
-
-            //Validacao do cpf
-
-		  do{
+    	printf("\n\n\t-----------------------------");
+        printf("\n\t  Cadastro de Novo Paciente");
+        printf("\n\t-----------------------------");
+    	if ((arq = fopen(arquivoPacientes, "a+b")) == NULL) {
+		printf("erro");
+		}
+		else{
             do{
+		   			fseek(arq, 0, SEEK_SET);
+		   			terminou = 0;
+		   			a=0;
+		   			i=0;
+		   			printf("\n\nCPF: ");
+		   			fflush(stdin);
+		   			//gets(cpf);
+		   			while(terminou == 0){
+		   				fflush(stdin);
+		   				cpf[i] = getch();
+		   				printf("%c", cpf[i]);
+						if((int)cpf[i] < 48 || (int)cpf[i] > 57){
+							printf("\n\n\tSomente e permitido digitar numeros de 0 a 9 e o CPF deve ter 11 digitos. Digite o CPF novamente.");
+							printf("\n\nCPF: ");
+							i = 0;
+							terminou = 0;
+						}
+						else{
+							i++;
+						}
+						if (i == 11){
+							terminou = 1;
+						}	
+					}
+					mascara(cpf, "###.###.###-##");
+		   			while(fread(&x, sizeof(paciente), 1, arq) > 0) {
+						if(strncmp(cpf,x.cpf, strlen(cpf)) == 0){
+				  			a=a+1;
+		    			}
+	       			}
+		   			if(a > 0){
+			  			printf("\n\n\tJa existe um paciente cadastrado com esse CPF: %s. Digite novamente:",cpf);
+		   			}
+		   			else{
+		   				fseek(arq, 0, SEEK_END);
+						x.codigo= ftell(arq) / sizeof(paciente) + 1;
+						printf("\n\nCodigo do Paciente: %d\n", x.codigo);
+	        			strcpy(x.cpf,cpf);
 
-            fflush(stdin);
-            system("cls");
-            printf("Digite o CPF apenas com os 11 numeros: \n");
-            gets(cpf);
+						printf("\nNome: ");
+						fflush(stdin);
+						gets(x.nome);
+	
+						printf("\nEndereco: ");
+						fflush(stdin);
+						gets(x.endereco);
+	
+						printf("\nTelefone: ");
+						fflush(stdin);
+						terminou = 0;
+						i = 0;
+						while(terminou == 0){
+		   					x.telefone[i] = getch();
+		   					printf("%c", x.telefone[i]);
+								if((int)x.telefone[i] < 48 || (int)x.telefone[i] > 57){
+									printf("\n\n\tSomente e permitido digitar numeros de 0 a 9 e o Telefone deve ter 2 Digitos de DDD e 9 referentes ao Telefone. Digite novamente.");
+									printf("\n\nTelefone: ");
+									i = 0;
+								}
+								else{
+									i++;
+								}
+								if (i == 11){
+									terminou = 1;
+								}	
+						}
+						//gets(x.telefone);
+						mascara(x.telefone, "(##)#####-####");
+						//gets(aux);
+				        //x.telefone=atoi(aux);
 
-            valid = 0;
-            for (l = 0; l < 11; l++ ) {
-                cpf[(int)l] = (int) cpf[(int)l] - 48;
-
-                if ( cpf[(int)l] <  0|| cpf[(int)l] > 9 ) {
-                        //Validando a entrada de dados
-                    printf("ENTRADA INVALIDA\n");
-                    valid =1;
-                    break;
-                }
-        }
-            }while(valid==1);
-
-        temp =0;
-            for ( char i = 0; i < 9; i++ )
-        temp += ( cpf[(int)i] * ( 10 - i ) );
-
-    temp %= 11;
-
-    if ( temp < 2 )
-        digito1 = 0;
-    else
-        digito1 = 11 - temp;
-
-    temp = 0;
-
-    for ( char i = 0; i < 10; i++ )
-        temp += ( cpf[(int)i] * ( 11 - i ) );
-
-    temp %= 11;
-
-    if ( temp < 2 ){
-        digito2 = 0;
-    }
-    else{
-        digito2 = 11 - temp;
-    }
-    }while((digito1 != cpf[9] && digito2 != cpf[10]));
-
-		   while(fread(&x, sizeof(paciente), 1, arq) > 0) {
-			if(strncmp(cpf,x.cpf, strlen(cpf)) == 0){
-			  a=a+1;
-		    }
-	       }
-		   if(a > 0){
-			  printf("\n\n\tJa existe um paciente cadastrado com esse cpf: %s\n\n",cpf);
-			  printf("\n\tCPF Invalido !!!\n\n");
-		   }
-		}while(a > 0);
-	        fseek(arq, 0, SEEK_END);
-		x.codigo= ftell(arq) / sizeof(paciente) + 1;
-		system("cls");
-		printf("\tCodigo do Paciente: %d\n\n", x.codigo);
-            strcpy(x.cpf,cpf);
-
-		do{
-			printf("\nNome: ");
-		fflush(stdin);
-		gets(x.nome);
-		}while(x.nome[0] == '\0');
-
-		do{
-		printf("\nEndereco: ");
-		fflush(stdin);
-		gets(x.endereco);
-		}while(x.endereco[0] == '\0');
-
-		printf("\nTelefone: ");
-		fflush(stdin);
-		gets(aux);
-	        x.telefone=atoi(aux);
-
-		fwrite(&x, sizeof(paciente), 1, arq);
-	    system("cls");
-	    printf("\n\n\tPaciente Cadastrado Com Sucesso!\n\n");
-	    fclose(arq);
-
-        printf("\n\tDeseja Cadastrar outro Paciente ?\n\n\t1 - Sim\n\n\t2 - Nao\n\n ");
- 	    scanf("%d", &num);
-		  while(num < 0 || num > 2){
-			  	system ("cls");
-			  	printf("\n\tOpcao Invalida!!\n\n");
-                printf("\n\tDeseja Cadastrar outro Paciente ?\n\n");
-                printf("\n\tDigite novamente:\n\n\n\t\t1 - Sim\n\n\t\t2 - Nao\n");
-  		        scanf("%d", &num);
-				system("cls");
-	      }
+						fwrite(&x, sizeof(paciente), 1, arq);
+					    system("cls");
+					    printf("\n\n\tPaciente Cadastrado Com Sucesso!\n\n");
+					    fclose(arq);
+				
+			    	    printf("\n\tDeseja Cadastrar outro Paciente ?\n\n\t1 - Sim\n\n\t2 - Nao\n\n ");
+ 					    scanf("%d", &num);
+						while(num < 1 || num > 2){
+						  	system ("cls");
+						  	printf("\n\tOpcao Invalida!!\n\n");
+			                printf("\n\tDeseja Cadastrar outro Paciente ?\n\n");
+			                printf("\n\tDigite novamente:\n\n\n\t\t1 - Sim\n\n\t\t2 - Nao\n");
+			  		        scanf("%d", &num);
+							system("cls");
+						}
+		   			} 					
+		   	}while(a > 0);
+		}
 	}while(num==1);
 }
 
@@ -332,17 +321,18 @@ paciente c;
 		system("pause");
 		return;
 	}
-
-	printf("\n\nPacientes Cadastrados\n\n");
-	printf("==========================================================================\n");
-	printf("Cod. Nome\tEndereco\tCpf\t   tel.\t    \n");
-	printf("==========================================================================\n\n");
-	printf("--------------------------------------------------------------------------\n");
+	printf("\n\n\t\t                                         -------------------------");
+	printf("\n\t\t                                           Pacientes Cadastrados   \n");
+	printf("\t\t                                         -------------------------");
+	printf("\n============================================================================================================================================\n");
+	printf("Cod. Nome  |  Nome                            |  Endereco                                            |  CPF              |  Tel.            \n");
+	printf("============================================================================================================================================\n");
+	printf("--------------------------------------------------------------------------------------------------------------------------------------------\n");
 	while (fread(&c, sizeof(paciente), 1, arq) > 0) {
 
-     printf("%04d %-10s %-15s %-12s %-12d  \n",c.codigo,c.nome,c.endereco,c.cpf,c.telefone);
+     printf("%09d  |  %-30s  |  %-50s  |  %-15s  |  %-15s  \n",c.codigo,c.nome,c.endereco,c.cpf,c.telefone);
 
-	printf("--------------------------------------------------------------------------\n");
+	printf("--------------------------------------------------------------------------------------------------------------------------------------------\n");
 	}
 	fseek(arq,0,SEEK_SET);
 
@@ -922,4 +912,23 @@ void consultaMedicoNome(void){
 			}
   		system("cls");
 		}while(num2==1);
+}
+
+void mascara(char *frase, char formato[]){
+	int tamanho, i, j = 0;
+	tamanho = strlen(formato);
+	char aux[tamanho + 1];
+	
+	for(i=0; i<tamanho; i++){
+		if(formato[i] != '#'){
+			aux[i] = formato[i];
+		}
+		else{
+			aux[i] = frase[j];
+			j++;
+		}
+	}
+	
+	strcpy(frase, aux);
+	
 }
