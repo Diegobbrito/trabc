@@ -1,4 +1,4 @@
-/*Trabalho Final da disciplina de Linguagem de Programação*/
+/*Trabalho Final da disciplina de Linguagem de Programacao*/
 
 
 //Teste Gustavo
@@ -25,7 +25,7 @@ typedef struct
     int codigo;
 	char nome[30];
     char endereco[50];
-	char cpf[15];
+	char cpf[12];
     int telefone;
 }paciente;
 
@@ -45,6 +45,7 @@ void consultaPacienteCPF(void);
 void consultaMedicos(void);
 void consultaMedicoCodigo(void);
 void consultaMedicoNome(void);
+
 int main(){
     int op;
 	do {
@@ -112,10 +113,15 @@ void cadastraPaciente(void)
 
 	FILE * arq;
 	paciente x;
+
     char aux[15];
-    char cpf[15];
-    int i=0,j=0;
+    char cpf[12];
+    char l;
+    int i=0,j, valid =0;
     int a = 0, num=0;
+    int digito1,
+        digito2,
+        temp = 0;
     do{
             printf("\n\n\t     Cadastro de Novo Paciente\n\n");
 		do{
@@ -125,9 +131,55 @@ void cadastraPaciente(void)
 		   }
 		   fseek(arq, 0, SEEK_SET);
 		   a=0;
-		   printf("\nCPF: ");
-		   fflush(stdin);
-		   gets(cpf);
+
+            //Validacao do cpf
+
+		  do{
+            do{
+
+            fflush(stdin);
+            system("cls");
+            printf("Digite o CPF apenas com os 11 numeros: \n");
+            gets(cpf);
+
+            valid = 0;
+            for (l = 0; l < 11; l++ ) {
+                cpf[(int)l] = (int) cpf[(int)l] - 48;
+
+                if ( cpf[(int)l] <  0|| cpf[(int)l] > 9 ) {
+                        //Validando a entrada de dados
+                    printf("ENTRADA INVALIDA\n");
+                    valid =1;
+                    break;
+                }
+        }
+            }while(valid==1);
+
+        temp =0;
+            for ( char i = 0; i < 9; i++ )
+        temp += ( cpf[(int)i] * ( 10 - i ) );
+
+    temp %= 11;
+
+    if ( temp < 2 )
+        digito1 = 0;
+    else
+        digito1 = 11 - temp;
+
+    temp = 0;
+
+    for ( char i = 0; i < 10; i++ )
+        temp += ( cpf[(int)i] * ( 11 - i ) );
+
+    temp %= 11;
+
+    if ( temp < 2 ){
+        digito2 = 0;
+    }
+    else{
+        digito2 = 11 - temp;
+    }
+    }while((digito1 != cpf[9] && digito2 != cpf[10]));
 
 		   while(fread(&x, sizeof(paciente), 1, arq) > 0) {
 			if(strncmp(cpf,x.cpf, strlen(cpf)) == 0){
@@ -141,16 +193,21 @@ void cadastraPaciente(void)
 		}while(a > 0);
 	        fseek(arq, 0, SEEK_END);
 		x.codigo= ftell(arq) / sizeof(paciente) + 1;
+		system("cls");
 		printf("\tCodigo do Paciente: %d\n\n", x.codigo);
-	        strcpy(x.cpf,cpf);
+            strcpy(x.cpf,cpf);
 
-		printf("\nNome: ");
+		do{
+			printf("\nNome: ");
 		fflush(stdin);
 		gets(x.nome);
+		}while(x.nome[0] == '\0');
 
+		do{
 		printf("\nEndereco: ");
 		fflush(stdin);
 		gets(x.endereco);
+		}while(x.endereco[0] == '\0');
 
 		printf("\nTelefone: ");
 		fflush(stdin);
