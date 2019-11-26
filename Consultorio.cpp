@@ -7,6 +7,7 @@
 #include <ctype.h>
 #define arquivoPacientes "pacientes.dat"
 #define arquivoMedico "medico.dat"
+#define arquivoConsulta "consulta.dat"
 #define arqLista
 
 //Define q data com os seguintes parâmetros
@@ -32,10 +33,21 @@ typedef struct
 typedef struct
 {
     int codigo;
-	char nome[50];
+	char nome[30];
 	char especialidade[30];
     char crm[6];
 }medico;
+
+typedef struct
+{
+	int codigo;
+	char nome_paciente[30];
+	char cpf[15];
+	char crm[6];
+	char nome[50];
+	char especialidade[30];
+	char data[11];
+}consulta;
 
 void cadastraPaciente(void);
 void cadastraMedico(void);
@@ -45,6 +57,8 @@ void consultaPacienteCPF(void);
 void consultaMedicos(void);
 void consultaMedicoCodigo(void);
 void consultaMedicoNome(void);
+void cadastraConsulta(void);
+void mostrarConsulta(void);
 void mascara(char *frase, char *formato);
 
 int main(){
@@ -62,6 +76,8 @@ int main(){
 		printf("\n\t6- Mostrar todos os Medicos Cadastrados\n");
 		printf("\n\t7- Consultar Medicos por Codigos\n");
 		printf("\n\t8- Consultar Medicos por Nome\n");
+		printf("\n\t9- Cadastras Consultas\n");
+		printf("\n\t10- Ver todas as Consultas\n");
 		printf("\n\t0- Sair do programa\n\n");
 		printf("\tEscolha uma Opcao: ");
 		scanf("%d", &op);
@@ -98,6 +114,14 @@ int main(){
 			        system ("cls");
 					consultaMedicoNome();
 		         break;
+		    case 9:
+		    		system ("cls");
+		    		cadastraConsulta();
+		    	break;
+		    case 10:
+		    		system ("cls");
+		    		mostrarConsulta();
+		    	break;
 		    case 0:
 					system ("cls");
 			     break;
@@ -960,5 +984,224 @@ void mascara(char *frase, char formato[]){
 	}
 	
 	strcpy(frase, aux);
+	
+}
+
+void cadastraConsulta(void){
+	FILE *arqPaciente;
+	FILE *arqMedico;
+	FILE *arqConsulta;
+	
+	paciente temp_p;
+	medico temp_m;
+	consulta temp_c;
+	
+	int opcao, terminou = 0, achei = 0, i = 0, stop =0;
+	char cpf[15];
+	char crm[6];
+	
+	
+	if ((arqPaciente = fopen(arquivoPacientes, "a+b"))== NULL || (arqMedico = fopen(arquivoMedico, "a+b"))== NULL || (arqConsulta = fopen(arquivoConsulta, "a+b"))== NULL){
+		printf("Erro ao abrir arquivos.");
+		system("pause");
+		return;
+	}
+	else{
+		do{
+			achei = 0;
+			terminou = 0;
+			i = 0;
+			system("cls");
+			printf("\n\n\t-----------------------------");
+        	printf("\n\t    Cadastro de Consultas");
+        	printf("\n\t-----------------------------\n");
+			
+			//fseek(arqPaciente, 0, SEEK_SET);
+			fseek(arqMedico, 0, SEEK_SET);
+			fseek(arqPaciente, 0, SEEK_SET);
+			printf("\n\nCPF do Paciente: ");
+			while(terminou == 0){
+		   		fflush(stdin);
+		   		cpf[i] = getch();
+		   		printf("%c", cpf[i]);
+				if((int)cpf[i] < 48 || (int)cpf[i] > 57){
+					printf("\n\n\tSomente e permitido digitar numeros de 0 a 9 e o CPF deve ter 11 digitos. Digite o CPF novamente.");
+					printf("\n\nCPF do Paciente: ");
+					i = 0;
+					terminou = 0;
+				}
+				else{
+					i++;
+				}
+				if (i == 11){
+					terminou = 1;
+				}	
+			}
+			mascara(cpf, "###.###.###-##");
+			while(stop == 0 && achei == 0) {
+				if(fread(&temp_p, sizeof(paciente), 1, arqPaciente) > 0) {
+					if(strncmp(cpf,temp_p.cpf, strlen(cpf)) == 0){
+				  	achei = 1;
+		    		}
+				}
+				else{
+					stop = 1;
+				}
+			}
+			if(achei == 0){
+				printf("\nNao tem paciente cadastrado com esse CPF.");
+			}
+			else{
+				printf("\n\nDigite o CRM do Medico: ");
+				for(i=0; i<5; i++){
+		   			fflush(stdin);
+		   			crm[i] = getch();
+		   			printf("%c", crm[i]);
+					if((int)crm[i] < 48 || (int)crm[i] > 57){
+						printf("\n\n\tSomente e permitido digitar numeros de 0 a 9 e o CRM deve ter 5 digitos. Digite o CRM novamente.");
+						printf("\n\nCRM: ");
+						i = 0;
+					}
+				}
+				achei = 0;
+				stop = 0;
+				while(stop == 0 && achei == 0) {
+					if(fread(&temp_m, sizeof(medico), 1, arqMedico) > 0){
+						if(strncmp(crm,temp_m.crm, strlen(crm)) == 0){
+							achei = 1;
+		    			}
+		    		}
+		    		else{
+		    			stop = 1;
+					}
+				}
+				if (achei == 0){
+					printf("\nNao tem medico cadastrado com esse CRM.");
+				}
+				else{
+					fseek(arqConsulta, 0, SEEK_END);
+					temp_c.codigo= ftell(arqConsulta) / sizeof(consulta) + 1;
+					printf("\n\nCodigo da consulta: %d", temp_c.codigo);
+					
+					
+					strcpy(temp_c.nome_paciente, temp_p.nome);
+					strcpy(temp_c.cpf, temp_p.cpf);
+					strcpy(temp_c.crm, temp_m.crm);
+					strcpy(temp_c.nome, temp_m.nome);
+					strcpy(temp_c.especialidade, temp_m.especialidade);
+					
+					printf("\n\nDigite a data da Consulta: ");
+					
+					fflush(stdin);
+					gets(temp_c.data);
+					
+					fwrite(&temp_c, sizeof(consulta), 1, arqConsulta);
+					system("cls");
+					printf("\n\n\tPaciente Cadastrado Com Sucesso!\n\n");
+					
+					
+					
+					
+					
+				}	
+			}
+			printf("\nDeseja realizar o cadastro novamente?\n");
+			printf("\n 1 - Sim       0 - Nao\n");
+			scanf("%d", &opcao);			
+		}while(opcao == 1);	
+	fclose(arqPaciente);	
+	fclose(arqMedico);
+	fclose(arqConsulta);
+	return;
+	}		
+}
+
+void mostrarConsulta(void){
+	
+	
+	system("cls");
+
+	FILE * arq;
+	FILE * arq2;
+	int num=0;
+
+	consulta c;
+
+	if ((arq = fopen(arquivoConsulta, "rb")) == NULL) {
+		fprintf(stderr, "\n\tNao existe nenhum paciente cadastrado!\n\n\n");
+		printf("\n\ns");
+        system("pause");
+		return;
+	}
+
+	if((arq2 = fopen(arqLista"TodasConsultas.txt", "w")) == NULL) {
+		fprintf(stderr, "\n\tErro de abertura do arquivo %s!\n", arqLista"TodasConsultas.txt.txt");
+        printf("\n\n");
+		system("pause");
+		return;
+	}
+	printf("\n\n\t\t                                                         -------------------------");
+	printf("\n\t\t                                                            Consultas Agendadas   \n");
+	printf("\t\t                                                         -------------------------");
+	printf("\n================================================================================================================================================================================\n");
+	printf("Cod. Consulta  |  Nome do Paciente                |  CPF              |  CRM do Medico  |  Nome do Medico                  |  Especialidade                   |  Data            \n");
+	printf("================================================================================================================================================================================\n");
+	printf("--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n");
+	
+	fseek(arq,0,SEEK_SET);
+	
+	while (fread(&c, sizeof(consulta), 1, arq) > 0) {  
+		printf("%09d      |  %-30s  |  %-15s  |  %-6s         |  %-30s  |  %-30s  |  %-11s\n",c.codigo,c.nome_paciente,c.cpf,c.crm ,c.nome , c.especialidade, c.data);
+		printf("--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\n");
+	}
+
+//	printf("\n\n\tDeseja gerar um relatorio ?\n\n\tDigite:\n\n\t1- Sim\n\n\t2- Nao\n\n\t");
+//    scanf("%d", &num);
+//    while(num<1||num>2){
+//	  	system ("cls");
+//	    printf("\n\tOpcao Invalida!!!");
+//        printf("\n\n\tDeseja gerar um relatorio ?\n\n\tDigite novamente:\n\n\t\t 1- Sim \n\t\t 2- Nao\n ");
+//        scanf("%d", &num);
+//    }
+   if(num==1){
+/*	fprintf(arq2, "\n\n\t\t                                         -------------------------");
+	fprintf(arq2, "\n\t\t                                           Pacientes Cadastrados   \n");
+	fprintf(arq2, "\t\t                                         -------------------------");
+	fprintf(arq2, "\n============================================================================================================================================\n");
+	fprintf(arq2,"Cod. Nome  |  Nome                            |  Endereco                                            |  CPF              |  Tel.            \n");
+	fprintf(arq2,"============================================================================================================================================\n");
+	fprintf(arq2,"--------------------------------------------------------------------------------------------------------------------------------------------\n");
+      	while (fread(&c, sizeof(paciente), 1, arq) > 0) {
+            fprintf(arq2,"%09d  |  %-30s  |  %-50s  |  %-15s  |  %-15s  \n",c.codigo,c.nome,c.endereco,c.cpf,c.telefone);
+        	fprintf(arq2,"--------------------------------------------------------------------------------------------------------------------------------------------\n");
+        }
+        system ("cls");
+		printf("\n\n\tRelatorio gerado com sucesso!\n\n");
+   }
+  */ 
+}
+   else if(num==2){
+		   system ("cls");
+		  	return;
+   }
+    system("pause");
+    system("cls");
+    fclose(arq);
+    fclose(arq2);
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 }
